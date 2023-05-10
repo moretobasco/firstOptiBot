@@ -9,7 +9,7 @@ def listing():
     return datalist
 
 
-print(listing())
+# print(listing())
 
 
 # this function is searching data from datalist
@@ -25,6 +25,11 @@ def get_info(period: str = 'Jan 21', entity: str = 'Итого'):
 
     return final_data
 
+def parsed_data(period: str = 'Jan 21', entity: str = 'Итого') -> str:
+    data = get_info(period, entity)
+    result = ''.join(f"Выбранный период: {period}\nВыбранная компания: {entity}\n") + \
+                   ''.join([f"{obj['plLine']}: {obj['amount']}\n" for obj in data])
+    return result
 
-print(get_info('Jan 21', 'Итого'))
+print(parsed_data('Jan 21', 'Итого'))
 

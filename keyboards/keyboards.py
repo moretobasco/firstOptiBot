@@ -19,6 +19,44 @@ keyboard_years: InlineKeyboardMarkup = InlineKeyboardMarkup(
 )
 
 
+button_back_to_years: InlineKeyboardButton = InlineKeyboardButton(
+    text='ВЫБРАТЬ ДРУГОЙ ГОД',
+    callback_data='button_back_to_years_pressed'
+)
+
+keyboard_back_to_years: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[[button_back_to_years]]
+)
+
+button_back_to_companies: InlineKeyboardButton = InlineKeyboardButton(
+    text='ВЫБРАТЬ ДРУГУЮ КОМПАНИЮ',
+    callback_data='button_back_to_companies_pressed'
+)
+
+keyboard_back_to_companies: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[[button_back_to_companies]]
+)
+
+
+confirm_button: InlineKeyboardButton = InlineKeyboardButton(
+    text='✅ ПОДТВЕРЖДАЮ ✅',
+    callback_data='confirm_button_pressed'
+)
+
+keyboard_confirm: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[[confirm_button]]
+)
+
+
+clear_history_button: InlineKeyboardButton = InlineKeyboardButton(
+    text='❌ ОЧИСТИТЬ С ЭКРАНА ❌',
+    callback_data='clear_history_button_pressed'
+)
+
+keyboard_clear_history: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[[clear_history_button]]
+)
+
 
 def keyboard_twenty_one_en() -> InlineKeyboardMarkup:
     # initialize builder
@@ -51,7 +89,8 @@ def keyboard_twenty_two() -> InlineKeyboardMarkup:
 def keyboard_companies() -> InlineKeyboardMarkup:
     # initialize builder
     kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    kb_builder.row(*[InlineKeyboardButton(text=item, callback_data=item) for item in companies])
+    kb_builder.add(*[InlineKeyboardButton(text=item, callback_data=item) for item in companies])
+    kb_builder.adjust(1, 3)
     return kb_builder.as_markup()
 
 # оптимизировать весь модуль
@@ -61,4 +100,3 @@ def keyboard_pl() -> InlineKeyboardMarkup:
     kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
     kb_builder.row(*[InlineKeyboardButton(text=item, callback_data=item) for item in pl_lines])
     return kb_builder.as_markup()
-
