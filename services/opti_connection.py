@@ -62,7 +62,7 @@ def second_request():
             break
     return response.json()['params']['data']['result_data']
 
-# print(second_request())
+print(second_request())
 
 
 

@@ -1,5 +1,5 @@
-from aiogram import Router
-from aiogram.types import CallbackQuery, Message
+from aiogram import Router, Bot
+from aiogram.types import CallbackQuery, Message, FSInputFile
 from aiogram.filters import Command, CommandStart, Text
 from lexicon.lexicon import LEXICON, months_twentyone_en, months_twentytwo_en,\
     months_twentytwo_ru, months_twentyone_ru, companies, pl_lines
@@ -9,14 +9,16 @@ from keyboards.keyboards import keyboard_years, keyboard_twenty_one_en, keyboard
 from database.database import users_choose, user_db
 from copy import deepcopy
 from services.opti_parser import get_info, listing, parsed_data
-
+from aiogram.methods import SendPhoto
 
 router: Router = Router()
 
 # this handler will be called when /start button is pressed,
 # adding user`s id to the DB
 @router.message(CommandStart())
-async def process_start_command(message: Message):
+async def process_start_command(message: Message, bot: Bot):
+    logo = FSInputFile('images/logo.png')
+    await bot.send_photo(chat_id=message.chat.id, photo=logo)
     await message.answer(text=LEXICON['/start'], reply_markup=keyboard_years)
     if message.from_user.id not in user_db:
         user_db[message.from_user.id] = deepcopy(users_choose)
