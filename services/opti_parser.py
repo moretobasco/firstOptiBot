@@ -1,9 +1,10 @@
-from services.opti_connection import second_request
+import asyncio
+from services.ascn_connection import second_request
 import locale
 
 # this function puts values from the second request to datalist for the further iterating to get info user needs
-def listing():
-    data = second_request()
+async def listing():
+    data = await second_request()
     datalist = []
     for item in data:
         datalist.append(data[item])
@@ -11,8 +12,8 @@ def listing():
 
 
 # this function is searching data from datalist
-def get_info(period: str, entity: str):
-    datalist = listing()
+async def get_info(period: str, entity: str):
+    datalist = await listing()
     final_data = [d['pl'] for d in datalist if d['month'] == period and d['company'] == entity]
     # for d in datalist:
     #     if d['month'] == period and d['company'] == entity:
@@ -23,8 +24,8 @@ def get_info(period: str, entity: str):
     return final_data
 
 
-def formatting(period: str, entity: str):
-    data = get_info(period, entity)
+async def formatting(period: str, entity: str):
+    data = await get_info(period, entity)
     locale.setlocale(locale.LC_ALL, 'ru_RU')
     for item in data:
         if '%' in item['plLine']:
@@ -35,11 +36,14 @@ def formatting(period: str, entity: str):
 
 
 
-def parsed_data(period: str, entity: str):
-    data = formatting(period, entity)
+async def parsed_data(period: str = 'Jan 21', entity: str = 'Итого'):
+    data = await formatting(period, entity)
     result = ''.join(f"Выбранный период: <b>{period}</b>\nВыбранная компания: <b>{entity}</b>\n\n") + \
                    ''.join([f"{obj['plLine']}: {obj['amount']}\n" for obj in data])
+    print(result)
     return result
 
 
-print(parsed_data('Jan 21', 'Итого'))
+# print(parsed_data('Jan 21', 'Итого'))
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(parsed_data('Jan 21', 'Итого'))

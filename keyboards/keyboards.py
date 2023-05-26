@@ -1,102 +1,60 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from lexicon.lexicon import LEXICON, months_twentyone_ru, months_twentytwo_ru, companies, pl_lines,\
-    months_twentyone_en, months_twentytwo_en
+from lexicon.lexicon import LEXICON, companies
+from datetime import datetime
+import locale
 
-button_2021: InlineKeyboardButton = InlineKeyboardButton(
-    text='2021',
-    callback_data='button_2021_pressed'
-)
-
-button_2022: InlineKeyboardButton = InlineKeyboardButton(
-    text='2022',
-    callback_data='button_2022_pressed'
-)
-
-keyboard_years: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[button_2021],
-                     [button_2022]]
-)
-
-
-button_back_to_years: InlineKeyboardButton = InlineKeyboardButton(
-    text='ВЫБРАТЬ ДРУГОЙ ГОД',
-    callback_data='button_back_to_years_pressed'
-)
-
-keyboard_back_to_years: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[button_back_to_years]]
-)
-
-button_back_to_companies: InlineKeyboardButton = InlineKeyboardButton(
-    text='ВЫБРАТЬ ДРУГУЮ КОМПАНИЮ',
-    callback_data='button_back_to_companies_pressed'
-)
-
-keyboard_back_to_companies: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[button_back_to_companies]]
-)
-
-
-confirm_button: InlineKeyboardButton = InlineKeyboardButton(
-    text='✅ ПОДТВЕРЖДАЮ ✅',
-    callback_data='confirm_button_pressed'
-)
-
-keyboard_confirm: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[confirm_button]]
-)
-
-
-clear_history_button: InlineKeyboardButton = InlineKeyboardButton(
-    text='❌ ОЧИСТИТЬ С ЭКРАНА ❌',
-    callback_data='clear_history_button_pressed'
-)
-
-keyboard_clear_history: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[clear_history_button]]
-)
-
-
-def keyboard_twenty_one_en() -> InlineKeyboardMarkup:
+# this function creates a keyboard na letu
+def creating_keyboard(width: int, *args: str, last_btn: str | None = None, **kwargs: str) -> InlineKeyboardMarkup:
     # initialize builder
     kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    kb_builder.row(*[InlineKeyboardButton(text=item, callback_data=item) for item in months_twentyone_en], width=3)
+    # initialize list for buttons
+    buttons: list[InlineKeyboardButton] = []
+
+    # fill the list with buttons from agruments args and kwargs
+    if args:
+        for button in args:
+            buttons.append(InlineKeyboardButton(text=LEXICON[button] if button in LEXICON else button,
+                                                callback_data=button))
+
+    if kwargs:
+        for button, text in kwargs.items():
+            buttons.append(InlineKeyboardButton(text=text, callback_data=button))
+
+    # unpack list with buttons in a builder with row method with width parameter
+    kb_builder.row(*buttons, width=width)
+
+    # add in a builder last row if it had been added to function
+    if last_btn:
+        kb_builder.row(InlineKeyboardButton(text=last_btn, callback_data='last_btn'))
+
+    # return an object of keyboard
     return kb_builder.as_markup()
 
 
-def keyboard_twenty_two_en() -> InlineKeyboardMarkup:
-    # initialize builder
-    kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    kb_builder.row(*[InlineKeyboardButton(text=item, callback_data=item) for item in months_twentytwo_en], width=3)
-    return kb_builder.as_markup()
+# this function creates a list with months in Jan 21 format
+def creating_months(year: int):
+    month_list = []
+
+    for i in range(1, 13):
+        locale.setlocale(locale.LC_ALL, 'en_US')
+        month = f"{datetime.strptime(str(i), '%m').strftime('%b')} {str(year)[-2:]}"
+        month_list.append(month)
+
+    return month_list
 
 
-def keyboard_twenty_one() -> InlineKeyboardMarkup:
-    # initialize builder
-    kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    kb_builder.row(*[InlineKeyboardButton(text=item, callback_data=item) for item in months_twentyone_ru], width=3)
-    return kb_builder.as_markup()
+add_keys: InlineKeyboardButton = InlineKeyboardButton(
+    text='ДОБАВИТЬ КЛЮЧИ',
+    callback_data='add_keys_pressed'
+)
 
+delete_keys: InlineKeyboardButton = InlineKeyboardButton(
+    text='УДАЛИТЬ КЛЮЧИ',
+    callback_data='delete_keys_pressed'
+)
 
-def keyboard_twenty_two() -> InlineKeyboardMarkup:
-    # initialize builder
-    kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    kb_builder.row(*[InlineKeyboardButton(text=item, callback_data=item) for item in months_twentytwo_ru], width=3)
-    return kb_builder.as_markup()
-
-
-def keyboard_companies() -> InlineKeyboardMarkup:
-    # initialize builder
-    kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    kb_builder.add(*[InlineKeyboardButton(text=item, callback_data=item) for item in companies])
-    kb_builder.adjust(1, 3)
-    return kb_builder.as_markup()
-
-# оптимизировать весь модуль
-
-def keyboard_pl() -> InlineKeyboardMarkup:
-    # initialize builder
-    kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    kb_builder.row(*[InlineKeyboardButton(text=item, callback_data=item) for item in pl_lines])
-    return kb_builder.as_markup()
+keys_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[[add_keys],
+                     [delete_keys]]
+)
